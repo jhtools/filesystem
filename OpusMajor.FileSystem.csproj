@@ -10,6 +10,7 @@
         <Title>Library working with files in .Net</Title>
         <PackageTags>File;Directory;FileInfo;DirectoryInfo</PackageTags>
         <Authors>Jens Horstmeier</Authors>
+        <Company>OpusMajor</Company>
         <Copyright>(C) 2022 by Jens Horstmeier</Copyright>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

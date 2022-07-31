@@ -25,11 +25,4 @@ jobs:
       run: dotnet nuget add source --username OpusMajor --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/OpusMajor/index.json"
     - name: Publish
       run: pwsh /c ./publish.ps1
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.0
-      with:
-        # Artifact name
-        name: Package
-        # A file, directory or wildcard pattern that describes what to upload
-        path: Out/*
         
