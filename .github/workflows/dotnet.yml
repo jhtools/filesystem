@@ -21,8 +21,10 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet pack -c Release -o Out --no-restore
-    - name: Publish
+    - name: Add github
       run: dotnet nuget add source --username OpusMajor --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/OpusMajor/index.json"
+    - name: Publish
+      run: pwsh /c .\publish.ps1
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
