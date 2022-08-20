@@ -18,6 +18,13 @@ public static class DirectoryInfoExtensions
     public static DirectoryInfo GetDirectory(this DirectoryInfo d, string name) =>
         new DirectoryInfo(Path.Combine(d.FullName, name));
 
+
+    public static DirectoryInfo? HasSubDirectory(this DirectoryInfo d, string name)
+    {
+        var s = GetDirectory(d, name);
+        return s.Exists ? s : null;
+    }
+
     public static DirectoryInfo EnsureExistence(this DirectoryInfo d)
     {
         try
