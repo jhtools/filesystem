@@ -143,3 +143,17 @@ The content must be UTF8 encoded.
 
 For most operations exist Async overloads. They usually simply use Task.Run for the 
 synchronous variant. So don't expect significate improvements.
+
+## FileLockFactory
+
+The `FileLockFactory` is used for locks in the file system with a classical lock file.
+Use it like this:
+
+```C#
+var factory = new FileLockFactory();
+...
+using var fileLock = factory.Create(lockFile, TimeSpan.FromMinutes(5))
+{
+    ...
+}
+```
