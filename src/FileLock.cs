@@ -1,6 +1,6 @@
 namespace OpusMajor.FileSystem;
 
-public class FileLock : IDisposable
+public class FileLock : IDisposable, IAsyncDisposable
 {
     private readonly FileInfo _path;
     private readonly Stream _stream;
@@ -13,8 +13,13 @@ public class FileLock : IDisposable
 
     public void Dispose()
     {
-        _stream.Close();
         _stream.Dispose();
         _path.Delete();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _stream.DisposeAsync();
+        await Task.Run(() => _path.Delete());
     }
 }
