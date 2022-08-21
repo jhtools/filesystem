@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System.Collections.Immutable;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 
@@ -199,4 +200,13 @@ public static class DirectoryInfoExtensions
         var txt = JsonSerializer.Serialize(data, options);
         d.GetFile(name).WriteAllText(txt);
     }
+
+    public static IEnumerable<FileInfo> Files(
+        this DirectoryInfo d,
+        Func<FileInfo, bool> predicate,
+        string searchPattern = "*.*",
+        SearchOption? searchOption = null) =>
+
+        d.EnumerateFiles(searchPattern, searchOption ?? SearchOption.TopDirectoryOnly)
+            .Where(predicate);
 }

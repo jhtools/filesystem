@@ -116,6 +116,24 @@ var di = new DirectoryInfo("C:/tmp/a")
 await di.ReadJsonAsync<MyType>()
 ```
 
+### WriteJson/WriteJsonAsync
+
+Writes the given object to the named file.
+
+```c#
+var di = new DirectoryInfo("C:/tmp/a")
+await di.WriteJsonAsync("a.json", obj);
+```
+
+### Files
+
+A helper to filter files.
+
+```c#
+var di = new DirectoryInfo("C:/tmp/a")
+await di.Files(f => string.Equals(f.Extension, ".zip"));
+```
+
 ## FileInfoExtensions
 
 `FileInfo WriteAllText(this FileInfo fi, string? text)`
@@ -146,6 +164,7 @@ work exactly as the functions with the same name in the `FILE` class
 
 Tries to read the content of the file and converts it to the type T.
 The content must be UTF8 encoded.
+
 
 ## Async Operations
 
