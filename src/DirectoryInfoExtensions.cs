@@ -1,5 +1,6 @@
 ﻿using System.IO.Compression;
 using System.Text;
+using System.Text.Json;
 
 namespace OpusMajor.FileSystem;
 
@@ -180,4 +181,22 @@ public static class DirectoryInfoExtensions
 
     public static T? ReadJson<T>(this DirectoryInfo d, string name) =>
         d.GetFile(name).GetJson<T>();
+
+    public static async Task WriteJsonAsync<T>(this DirectoryInfo d,
+        string name,
+        T data,
+        JsonSerializerOptions? options = null) where T:class
+    {
+        var txt = JsonSerializer.Serialize(data, options);
+        await d.GetFile(name).WriteAllTextAsync(txt);
+    }
+
+    public static void WriteJson<T>(this DirectoryInfo d,
+        string name,
+        T data,
+        JsonSerializerOptions? options = null) where T:class
+    {
+        var txt = JsonSerializer.Serialize(data, options);
+        d.GetFile(name).WriteAllText(txt);
+    }
 }
