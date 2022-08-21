@@ -107,6 +107,14 @@ di.CreateZipFile(di, fi, CompressionLevel.Fastest, true, Encoding.UTF8)
 Creates a zip archive for the given file. You can find the arguments here:
 https://docs.microsoft.com/de-de/dotnet/api/system.io.compression.zipfile.createfromdirectory?view=net-6.0#system-io-compression-zipfile-createfromdirectory(system-string-system-string-system-io-compression-compressionlevel-system-boolean-system-text-encoding)
 
+### ReadJson/ReadJsonAsync
+
+Reads the content of the named file as the given type.
+
+```c#
+var di = new DirectoryInfo("C:/tmp/a")
+await di.ReadJsonAsync<MyType>()
+```
 
 ## FileInfoExtensions
 

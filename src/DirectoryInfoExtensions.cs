@@ -174,4 +174,10 @@ public static class DirectoryInfoExtensions
         Encoding? entryNameEncoding = null) =>
         await Task.Run(() =>
             CreateZipFile(d, destination, compressionLevel, includeBaseDirectory, entryNameEncoding));
+
+    public static async Task<T?> ReadJsonAsync<T>(this DirectoryInfo d, string name) =>
+        await d.GetFile(name).GetJsonAsync<T>();
+
+    public static T? ReadJson<T>(this DirectoryInfo d, string name) =>
+        d.GetFile(name).GetJson<T>();
 }
