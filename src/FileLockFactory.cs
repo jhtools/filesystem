@@ -12,7 +12,7 @@ public class FileLockFactory
         {
             try
             {
-                var stream = File.Open(path.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+                var stream = File.Open(path.FullName, FileMode.Create, FileAccess.Write, FileShare.None);
                 return new FileLock(path, stream);
             }
             catch (IOException)
