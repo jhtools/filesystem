@@ -61,7 +61,7 @@ public static class DirectoryInfoExtensions
         }
     }
 
-    public static async Task EnsureDeleteAsync(this DirectoryInfo d)
+    public static async Task EnsureDeletedAsync(this DirectoryInfo d)
     {
         await Task.Run(() => EnsureDeleted(d));
     }
