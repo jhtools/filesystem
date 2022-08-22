@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 
 namespace OpusMajor.FileSystem;
@@ -76,6 +77,21 @@ public static class FileInfoExtensions
     {
         await using var stream = File.OpenRead(fi.FullName);
         return await JsonSerializer.DeserializeAsync<T>(stream, options, ct);
+    }
+
+    public static async Task<byte[]> GetSha256Async(this FileInfo fi)
+    {
+        using SHA256 sha256 = SHA256.Create();
+        await using var fileStream = fi.OpenRead();
+        return await sha256.ComputeHashAsync(fileStream);
+    }
+
+    public static async Task<string> GetSha256AsStringAsync(this FileInfo fi)
+    {
+        var sha = await fi.GetSha256Async();
+        return BitConverter.ToString(sha)
+            .Replace("-", "")
+            .ToLowerInvariant();
     }
 
 }

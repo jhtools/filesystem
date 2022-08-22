@@ -165,6 +165,13 @@ work exactly as the functions with the same name in the `FILE` class
 Tries to read the content of the file and converts it to the type T.
 The content must be UTF8 encoded.
 
+### GetSha256Async
+
+Returns the SHA256 value of the file as byte array
+
+### GetSha256AsStringAsync
+
+Returns the SHA256 value of the file as string (hex representation of the byte array)
 
 ## Async Operations
 
@@ -184,3 +191,4 @@ using var fileLock = factory.Create(lockFile, TimeSpan.FromMinutes(5))
     ...
 }
 ```
+
