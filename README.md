@@ -2,6 +2,9 @@
 
 A library of extensions to DirectoryInfo and FileInfo
 
+
+[![CodeQL](https://github.com/OpusMajor/OpusMajor.FileSystem/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/OpusMajor/OpusMajor.FileSystem/actions/workflows/codeql-analysis.yml)
+
 ## DirectoryInfo Extensions
 
 ### GetFile
