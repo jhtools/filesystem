@@ -4,6 +4,7 @@ A library of extensions to DirectoryInfo and FileInfo
 
 
 [![CodeQL](https://github.com/OpusMajor/OpusMajor.FileSystem/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/OpusMajor/OpusMajor.FileSystem/actions/workflows/codeql-analysis.yml)
+[![.NET](https://github.com/OpusMajor/OpusMajor.FileSystem/actions/workflows/dotnet.yml/badge.svg)](https://github.com/OpusMajor/OpusMajor.FileSystem/actions/workflows/dotnet.yml)
 
 ## DirectoryInfo Extensions
 
