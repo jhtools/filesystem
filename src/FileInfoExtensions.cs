@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace OpusMajor.FileSystem;
+namespace JHTools.FileSystem;
 
 public static class FileInfoExtensions
 {

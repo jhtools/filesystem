@@ -1,7 +1,5 @@
 
-using System.IO;
-
-namespace OpusMajor.FileSystem;
+namespace JHTools.FileSystem;
 
 public class FileLockFactory
 {

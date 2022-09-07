@@ -1,52 +1,33 @@
-﻿using System.Collections.Immutable;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 
-namespace OpusMajor.FileSystem;
+namespace JHTools.FileSystem;
 
 public static class DirectoryInfoExtensions
 {
-    public static FileInfo GetFile(this DirectoryInfo d, string name) =>
-        new FileInfo(Path.Combine(d.FullName, name));
+    public static FileInfo GetFile(this DirectoryInfo d, params string[] names) =>
+        new(Path.Combine(d.FullName, Path.Combine(names)));
 
     public static FileInfo GetExistingFile(this DirectoryInfo d, string name)
     {
-        var file = GetFile(d, name);
-        if (!file.Exists) throw new FileNotFoundException(file.FullName);
-        return file;
+        var f = d.GetFile(name);
+        if (!f.Exists)
+            throw new FileNotFoundException($"File {f.FullName} not found");
+        return f;
     }
 
-    public static DirectoryInfo GetDirectory(this DirectoryInfo d, string name) =>
-        new DirectoryInfo(Path.Combine(d.FullName, name));
-
-
-    public static DirectoryInfo? HasSubDirectory(this DirectoryInfo d, string name)
+    public static DirectoryInfo GetDirectory(this DirectoryInfo d, params string[] names) =>
+        new(Path.Combine(d.FullName, Path.Combine(names)));
+    
+    public static DirectoryInfo GetExistingDirectory(this DirectoryInfo d, string name)
     {
-        var s = GetDirectory(d, name);
-        return s.Exists ? s : null;
+        var f = d.GetDirectory(name);
+        if (!f.Exists)
+            throw new DirectoryNotFoundException($"Directory {f.FullName} not found");
+        return f;
     }
-
-    public static DirectoryInfo EnsureExistence(this DirectoryInfo d)
-    {
-        try
-        {
-            if (d.Exists) return d;
-            d.Create();
-            return d;
-        }
-        catch (Exception)
-        {
-            if (d.Exists) return d;
-            throw;
-        }
-    }
-
-    public static async Task<DirectoryInfo> EnsureExistenceAsync(this DirectoryInfo d)
-    {
-        return await Task.Run(() => EnsureExistence(d));
-    }
-
+    
     public static void EnsureDeleted(this DirectoryInfo d)
     {
         if (!d.Exists) return;
@@ -61,6 +42,26 @@ public static class DirectoryInfoExtensions
         }
     }
 
+    public static void EnsureCreated(this DirectoryInfo d)
+    {
+        if (d.Exists) return;
+        try
+        {
+            d.Create();
+        }
+        catch (Exception)
+        {
+            if (d.Exists) return;
+            throw;
+        }
+    }
+    
+    public static Task EnsureCreatedAsync(this DirectoryInfo d)
+    {
+        if (d.Exists) return Task.CompletedTask;
+        return Task.Run(() => d.EnsureCreated());
+    }
+    
     public static async Task EnsureDeletedAsync(this DirectoryInfo d)
     {
         await Task.Run(() => EnsureDeleted(d));
@@ -78,45 +79,15 @@ public static class DirectoryInfoExtensions
         return await Task.Run(() => EnsureEmpty(d));
     }
 
-    public static DirectoryInfo MakeEmpty(this DirectoryInfo d)
-    {
-        foreach (var di in d.EnumerateDirectories())
-        {
-            di.Delete(true);
-        }
-        foreach (var di in d.EnumerateFiles())
-        {
-            di.Delete();
-        }
-
-        return d;
-    }
-
-    public static DirectoryInfo DeleteFiles(this DirectoryInfo d, Func<FileInfo, bool> pred)
-    {
-        var filesToDelete = d.EnumerateFiles("*.*", SearchOption.AllDirectories)
-            .Where(fi => pred(fi));
-        foreach (var info in filesToDelete)
-        {
-            info.Delete();
-        }
-
-        return d;
-    }
-
-    public static async Task<DirectoryInfo> DeleteFilesAsync(this DirectoryInfo d, Func<FileInfo, bool> pred)
-    {
-        return await Task.Run(() => DeleteFiles(d, pred));
-    }
-    public static DirectoryInfo CopyTo(this DirectoryInfo source, DirectoryInfo target, CopyOperation operation)
+    public static async Task<DirectoryInfo> CopyToAsync(this DirectoryInfo source, DirectoryInfo target, CopyOperation operation)
     {
         if (operation == CopyOperation.Force)
         {
-            target.EnsureEmpty();
+            await target.EnsureEmptyAsync();
         }
         else
         {
-            target.EnsureExistence();
+            await target.EnsureCreatedAsync();
         }
 
         foreach (var file in source.EnumerateFiles())
@@ -132,26 +103,16 @@ public static class DirectoryInfoExtensions
                         continue;
                 }
             }
-            file.CopyTo(targetFile.FullName, true);
+            await Task.Run(() => file.CopyTo(targetFile.FullName, true));
         }
 
         foreach (var directory in source.EnumerateDirectories())
         {
-            CopyTo(directory, target.GetDirectory(directory.Name), operation);
+            await CopyToAsync(directory, target.GetDirectory(directory.Name), operation);
         }
-
         return target;
     }
-
-    public static long GetSize(this DirectoryInfo d)
-    {
-        return d.EnumerateFiles("*.*", SearchOption.AllDirectories)
-            .Sum(x => x.Length);
-    }
-
-    public static async Task<long> GetSizeAsync(this DirectoryInfo d) =>
-        await Task.Run(() => GetSize(d));
-
+    
     public static FileInfo CreateZipFile(
         this DirectoryInfo d,
         FileInfo destination,
@@ -201,12 +162,40 @@ public static class DirectoryInfoExtensions
         d.GetFile(name).WriteAllText(txt);
     }
 
-    public static IEnumerable<FileInfo> Files(
-        this DirectoryInfo d,
-        Func<FileInfo, bool> predicate,
-        string searchPattern = "*.*",
-        SearchOption? searchOption = null) =>
+    public static async Task<DirectoryInfo> UnzipToAsync(this FileInfo zipFile,
+        DirectoryInfo target,
+        bool deleteContents=false)
+    {
+        
+        if (deleteContents)
+        {
+            await target.EnsureEmptyAsync();
+        }
+        else
+        {
+            await target.EnsureCreatedAsync();
+        }
 
-        d.EnumerateFiles(searchPattern, searchOption ?? SearchOption.TopDirectoryOnly)
-            .Where(predicate);
+        await Task.Run(() => ZipFile.ExtractToDirectory(zipFile.FullName, target.FullName));
+        return target;
+    }
+    
+    public static DirectoryInfo UnzipTo(this FileInfo zipFile,
+        DirectoryInfo target,
+        bool deleteContents=false)
+    {
+        if (deleteContents)
+        {
+            target.EnsureEmpty();
+        }
+        else
+        {
+            target.EnsureCreated();
+        }
+
+        ZipFile.ExtractToDirectory(zipFile.FullName, target.FullName);
+        return target;
+    }
+    
+    
 }

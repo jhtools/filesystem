@@ -1,4 +1,4 @@
-namespace OpusMajor.FileSystem;
+namespace JHTools.FileSystem;
 
 public class FileLock : IDisposable, IAsyncDisposable
 {
