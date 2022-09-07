@@ -1,4 +1,4 @@
-﻿# LibFileSystem
+﻿# JHTools.FileSystem
 
 A library of extensions to DirectoryInfo and FileInfo
 
@@ -30,4 +30,17 @@ d.ReadJsonFile<TestObject>("test.json"); // reads a json file from the directory
 d.WriteJsonFile("test.json", new TestObject()); // writes a json file to the directory
 d.UnzipTo(@"C:\Temp2"); // unzips a zip file to the directory
 
+```
+
+## FileLock
+
+The file lock class can be used to lock a file for exclusive access. 
+This is useful when you want to make sure that only one process can access a file at a time.
+
+```csharp
+var factory = new FileLockFactory();
+using var fileLock = factory.Create(@"C:\Temp\test.txt");
+{
+    // do something with lock
+}
 ```
